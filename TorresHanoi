@@ -1,0 +1,18 @@
+module Hanoi where
+
+type Peg = String
+type Move = (Peg, Peg)
+
+
+hanoi :: Int -> Peg -> Peg -> Peg -> [Move]
+hanoi 0 _ _ _ = []
+hanoi n from to aux =
+
+    hanoi (n - 1) from aux to ++
+ 
+    [(from, to)] ++
+
+    hanoi (n - 1) aux to from
+
+main :: IO ()
+main = print(hanoi 3 "A" "B" "C")
