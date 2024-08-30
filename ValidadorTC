@@ -1,22 +1,28 @@
-import Data.Char (digitToInt)
+-- Convierte un entero en una lista de dígitos
+toDigits :: Integer -> [Integer]
+toDigits n
+    | n <= 0    = []
+    | otherwise = map (read . (:[])) (show n)
 
-main :: IO ()
-main = do
-    putStrLn "Ingrese los números de su tarjeta de crédito: "
-    tarjeta <- getLine
-    
-    let digitos = map digitToInt tarjeta
-        digitosProcesados = validate (reverse digitos)
-        suma = sum digitosProcesados
+-- Convierte un entero en una lista de dígitos en orden inverso
+toDigitsRev :: Integer -> [Integer]
+toDigitsRev n = reverse (toDigits n)
 
-    print (suma `mod` 10 == 0)
+-- Duplica cada otro número comenzando desde la derecha
+doubleEveryOther :: [Integer] -> [Integer]
+doubleEveryOther = reverse . zipWith ($) (cycle [id, (*2)]) . reverse
 
+-- Suma los dígitos de una lista de números
+sumDigits :: [Integer] -> Integer
+sumDigits = sum . concatMap toDigits
 
-validate :: [Int] -> [Int]
-validate [] = []
-validate (x:y:xs) = x : doubleEveryOther y : validate xs
-validate [x] = [x]  
+-- Valida un número de tarjeta de crédito
+validate :: Integer -> Bool
+validate n = (sumDigits (doubleEveryOther (toDigits n)) `mod` 10) == 0
 
-
-doubleEveryOther :: Int -> Int
-doubleEveryOther n = if n * 2 > 9 then (n * 2 - 9) else n * 2
+main::IO()
+main=do
+    putStrLn "Ingresa un número para validar:"
+    input <- getLine
+    let number = read input :: Integer
+    putStrLn $ "¿Es un número de tarjeta de crédito válido? " ++ show (validate number)
